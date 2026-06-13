@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 import Cookies from 'js-cookie';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://skillrise-academy-production.up.railway.app';
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'https://skillrise-academy-production.up.railway.app';
 
 const api: AxiosInstance = axios.create({
   baseURL: `${API_URL}/api`,

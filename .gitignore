@@ -1,2 +1,44 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Next.js build output
+.next/
+frontend/.next/
+out/
+build/
+dist/
+
+# !! CRITICAL — Environment files with secrets — NEVER commit !!
+.env
+.env.local
+.env.production
+.env.development
+.env*.local
+backend/.env
+frontend/.env.local
+frontend/.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# TypeScript
+*.tsbuildinfo
+
+# Misc
 .vercel
-node_modules
+.turbo
+coverage/

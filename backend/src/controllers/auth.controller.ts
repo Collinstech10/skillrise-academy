@@ -84,8 +84,10 @@ export async function register(req: Request, res: Response) {
       data: { user, token },
     });
   } catch (err: unknown) {
-    console.error('Register error:', err);
-    return res.status(500).json({ success: false, message: 'Registration failed. Try again.' });
+    const error = err as { message?: string; code?: string; details?: string };
+    console.error('Register error:', JSON.stringify(error, null, 2));
+    const message = error?.message || 'Registration failed. Try again.';
+    return res.status(500).json({ success: false, message, detail: error?.details });
   }
 }
 

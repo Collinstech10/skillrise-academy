@@ -10,12 +10,15 @@ import { authMiddleware, adminMiddleware } from '../middleware/auth';
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (_, file, cb) => {
-    if (file.mimetype.startsWith('image/')) cb(null, true);
-    else cb(new Error('Images only'));
-  },
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB max for videos
 });
+
+// Accept thumbnail (image), video, and pdf as separate fields
+const courseUpload = upload.fields([
+  { name: 'thumbnail', maxCount: 1 },
+  { name: 'video', maxCount: 1 },
+  { name: 'pdf', maxCount: 1 },
+]);
 
 const router = Router();
 router.use(authMiddleware, adminMiddleware);
@@ -28,10 +31,10 @@ router.get('/users', getUsers);
 router.put('/users/:userId/status', updateUserStatus);
 router.delete('/users/:userId', deleteUser);
 
-// Courses
+// Courses — use courseUpload for file fields
 router.get('/courses', getCourses);
-router.post('/courses', upload.single('thumbnail'), createCourse);
-router.put('/courses/:id', upload.single('thumbnail'), updateCourse);
+router.post('/courses', courseUpload, createCourse);
+router.put('/courses/:id', courseUpload, updateCourse);
 router.delete('/courses/:id', deleteCourse);
 
 // Payments

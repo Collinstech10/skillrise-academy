@@ -148,3 +148,41 @@ export async function uploadAvatar(req: AuthRequest, res: Response) {
     return res.status(500).json({ success: false, message: 'Upload failed' });
   }
 }
+
+export async function getLeaderboard(req: AuthRequest, res: Response) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('referrals')
+      .select('referrer_id, reward');
+
+    if (error) throw error;
+
+    const map = new Map<string, { count: number; earnings: number }>();
+    for (const r of data ?? []) {
+      const existing = map.get(r.referrer_id) || { count: 0, earnings: 0 };
+      map.set(r.referrer_id, { count: existing.count + 1, earnings: existing.earnings + r.reward });
+    }
+
+    if (map.size === 0) return res.json({ success: true, data: [] });
+
+    const userIds = Array.from(map.keys());
+    const { data: users } = await supabaseAdmin
+      .from('users')
+      .select('id, username, fullname, avatar_url')
+      .in('id', userIds);
+
+    const leaderboard = (users ?? [])
+      .map(u => ({
+        id: u.id, username: u.username, fullname: u.fullname, avatar_url: u.avatar_url,
+        referral_count: map.get(u.id)?.count || 0,
+        total_earnings: map.get(u.id)?.earnings || 0,
+      }))
+      .sort((a, b) => b.total_earnings - a.total_earnings)
+      .slice(0, 20);
+
+    return res.json({ success: true, data: leaderboard });
+  } catch (err) {
+    console.error('getLeaderboard error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
