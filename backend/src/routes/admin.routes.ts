@@ -3,6 +3,7 @@ import multer from 'multer';
 import {
   getStats, getUsers, updateUserStatus, deleteUser,
   getCourses, createCourse, updateCourse, deleteCourse,
+  createCourseJson, updateCourseJson,
   getPayments, verifyPayment, getReferrals,
   createAnnouncement, getAnnouncements,
 } from '../controllers/admin.controller';
@@ -10,10 +11,9 @@ import { authMiddleware, adminMiddleware } from '../middleware/auth';
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB max for videos
+  limits: { fileSize: 500 * 1024 * 1024 },
 });
 
-// Accept thumbnail (image), video, and pdf as separate fields
 const courseUpload = upload.fields([
   { name: 'thumbnail', maxCount: 1 },
   { name: 'video', maxCount: 1 },
@@ -31,11 +31,15 @@ router.get('/users', getUsers);
 router.put('/users/:userId/status', updateUserStatus);
 router.delete('/users/:userId', deleteUser);
 
-// Courses — use courseUpload for file fields
+// Courses — JSON routes (files pre-uploaded from browser)
 router.get('/courses', getCourses);
+router.post('/courses/json', createCourseJson);
+router.put('/courses/:id/json', updateCourseJson);
+router.delete('/courses/:id', deleteCourse);
+
+// Courses — legacy file upload routes (fallback)
 router.post('/courses', courseUpload, createCourse);
 router.put('/courses/:id', courseUpload, updateCourse);
-router.delete('/courses/:id', deleteCourse);
 
 // Payments
 router.get('/payments', getPayments);

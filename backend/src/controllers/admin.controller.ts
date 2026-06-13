@@ -285,3 +285,58 @@ export async function getAnnouncements(req: Request, res: Response) {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 }
+
+// JSON-based course create/update (files already uploaded to Supabase from browser)
+export async function createCourseJson(req: AuthRequest, res: Response) {
+  try {
+    const { id, title, description, price, category, level, duration, instructor, thumbnail, video_url, pdf_url } = req.body;
+    if (!title || !description || !price) {
+      return res.status(400).json({ success: false, message: 'Title, description, price required' });
+    }
+    const { data, error } = await supabaseAdmin
+      .from('courses')
+      .insert({
+        id: id || uuidv4(),
+        title, description,
+        price: Number(price),
+        category: category || 'Web Development',
+        level: level || 'Beginner',
+        duration: duration || '',
+        instructor: instructor || 'SkillRise Academy',
+        thumbnail: thumbnail || '',
+        video_url: video_url || '',
+        pdf_url: pdf_url || '',
+      })
+      .select().single();
+    if (error) throw error;
+    return res.status(201).json({ success: true, message: 'Course created', data });
+  } catch (err) {
+    console.error('createCourseJson:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
+
+export async function updateCourseJson(req: AuthRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    const { title, description, price, category, level, duration, instructor, thumbnail, video_url, pdf_url } = req.body;
+    const updates: Record<string, unknown> = {};
+    if (title) updates.title = title;
+    if (description) updates.description = description;
+    if (price) updates.price = Number(price);
+    if (category) updates.category = category;
+    if (level) updates.level = level;
+    if (duration !== undefined) updates.duration = duration;
+    if (instructor !== undefined) updates.instructor = instructor;
+    if (thumbnail) updates.thumbnail = thumbnail;
+    if (video_url !== undefined) updates.video_url = video_url;
+    if (pdf_url !== undefined) updates.pdf_url = pdf_url;
+
+    const { data, error } = await supabaseAdmin
+      .from('courses').update(updates).eq('id', id).select().single();
+    if (error) throw error;
+    return res.json({ success: true, message: 'Course updated', data });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}

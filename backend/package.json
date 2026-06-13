@@ -1,9 +1,6 @@
 {
   "name": "skillrise-backend",
   "version": "1.0.0",
-  "engines": {
-    "node": "20.x"
-  },
   "description": "SkillRise Academy Backend API",
   "main": "dist/index.js",
   "scripts": {

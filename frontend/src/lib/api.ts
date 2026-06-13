@@ -82,6 +82,8 @@ export const adminApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   deleteCourse: (id: string) => api.delete(`/admin/courses/${id}`),
+  createCourseJson: (data: Record<string, unknown>) => api.post('/admin/courses/json', data),
+  updateCourseJson: (id: string, data: Record<string, unknown>) => api.put(`/admin/courses/${id}/json`, data),
   getPayments: () => api.get('/admin/payments'),
   verifyPayment: (id: string) => api.put(`/admin/payments/${id}/verify`),
   getReferrals: () => api.get('/admin/referrals'),

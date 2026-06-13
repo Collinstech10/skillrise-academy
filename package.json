@@ -11,10 +11,6 @@
     "build:backend": "cd backend && npm run build"
   },
   "devDependencies": {
-    "@types/ws": "^8.18.1",
     "concurrently": "^8.2.2"
-  },
-  "dependencies": {
-    "ws": "^8.21.0"
   }
 }

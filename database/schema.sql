@@ -266,3 +266,108 @@ INSERT INTO announcements (id, title, message) VALUES (
   '🎉 Welcome to SkillRise Academy!',
   'We are excited to have you here! Browse our premium courses, share your referral link to earn ₦500 per friend, and start your journey to digital mastery today.'
 );
+
+-- ══════════════════════════════════════════════════════════════════════════
+-- NEW TABLES — Coupons, Wallet, Certificates, Community, Notifications
+-- ══════════════════════════════════════════════════════════════════════════
+
+-- Coupon / Promo codes
+CREATE TABLE IF NOT EXISTS coupons (
+  id            UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  code          TEXT NOT NULL UNIQUE,
+  discount_type TEXT NOT NULL DEFAULT 'percentage' CHECK (discount_type IN ('percentage','fixed')),
+  discount_value NUMERIC(10,2) NOT NULL,
+  max_uses      INTEGER NOT NULL DEFAULT 100,
+  used_count    INTEGER NOT NULL DEFAULT 0,
+  expires_at    TIMESTAMPTZ,
+  is_active     BOOLEAN NOT NULL DEFAULT true,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Wallet transactions
+CREATE TABLE IF NOT EXISTS wallet_transactions (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  type        TEXT NOT NULL CHECK (type IN ('credit','debit')),
+  amount      NUMERIC(12,2) NOT NULL,
+  description TEXT NOT NULL,
+  reference   TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Certificates
+CREATE TABLE IF NOT EXISTS certificates (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  course_id   UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+  issued_at   TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (user_id, course_id)
+);
+
+-- Community posts
+CREATE TABLE IF NOT EXISTS community_posts (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content     TEXT NOT NULL,
+  likes       INTEGER NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Community comments
+CREATE TABLE IF NOT EXISTS community_comments (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  post_id     UUID NOT NULL REFERENCES community_posts(id) ON DELETE CASCADE,
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  content     TEXT NOT NULL,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Notifications
+CREATE TABLE IF NOT EXISTS notifications (
+  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title       TEXT NOT NULL,
+  message     TEXT NOT NULL,
+  type        TEXT NOT NULL DEFAULT 'info' CHECK (type IN ('info','success','warning','referral','course','payment')),
+  is_read     BOOLEAN NOT NULL DEFAULT false,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Bank accounts for withdrawal
+CREATE TABLE IF NOT EXISTS bank_accounts (
+  id             UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id        UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  bank_name      TEXT NOT NULL,
+  account_number TEXT NOT NULL,
+  account_name   TEXT NOT NULL,
+  is_default     BOOLEAN NOT NULL DEFAULT true,
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Withdrawal requests
+CREATE TABLE IF NOT EXISTS withdrawal_requests (
+  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  amount          NUMERIC(12,2) NOT NULL,
+  bank_account_id UUID NOT NULL REFERENCES bank_accounts(id),
+  status          TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','approved','rejected','paid')),
+  admin_note      TEXT,
+  created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Disable RLS on new tables
+ALTER TABLE coupons               DISABLE ROW LEVEL SECURITY;
+ALTER TABLE wallet_transactions   DISABLE ROW LEVEL SECURITY;
+ALTER TABLE certificates          DISABLE ROW LEVEL SECURITY;
+ALTER TABLE community_posts       DISABLE ROW LEVEL SECURITY;
+ALTER TABLE community_comments    DISABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications         DISABLE ROW LEVEL SECURITY;
+ALTER TABLE bank_accounts         DISABLE ROW LEVEL SECURITY;
+ALTER TABLE withdrawal_requests   DISABLE ROW LEVEL SECURITY;
+
+-- Sample coupons
+INSERT INTO coupons (code, discount_type, discount_value, max_uses, expires_at) VALUES
+('WELCOME50', 'percentage', 50, 100, NOW() + INTERVAL '30 days'),
+('FLAT2000', 'fixed', 2000, 50, NOW() + INTERVAL '30 days'),
+('SKILLRISE', 'percentage', 20, 500, NOW() + INTERVAL '90 days')
+ON CONFLICT (code) DO NOTHING;
