@@ -3,6 +3,9 @@ import dotenv from 'dotenv';
 import ws from 'ws';
 dotenv.config();
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const wsAdapter = ws as any;
+
 const supabaseUrl = process.env.SUPABASE_URL!;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
@@ -18,7 +21,7 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
     persistSession: false,
   },
   realtime: {
-    transport: ws,
+    transport: wsAdapter,
     params: { eventsPerSecond: -1 },
   },
   global: {
@@ -29,7 +32,7 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 // Anon client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   realtime: {
-    transport: ws,
+    transport: wsAdapter,
     params: { eventsPerSecond: -1 },
   },
 });
