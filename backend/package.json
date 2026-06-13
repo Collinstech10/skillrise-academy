@@ -36,5 +36,8 @@
     "@types/node": "^20.12.12",
     "@types/uuid": "^9.0.8"
   },
-  "devDependencies": {}
+  "devDependencies": {},
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }

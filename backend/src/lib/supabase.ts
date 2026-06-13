@@ -12,10 +12,24 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 // Service role client — bypasses RLS, use only server-side
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { autoRefreshToken: false, persistSession: false },
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
+  realtime: {
+    // Disable realtime to avoid WebSocket issues on Node 18/20
+    params: { eventsPerSecond: -1 },
+  },
+  global: {
+    headers: { 'x-my-custom-header': 'skillrise-backend' },
+  },
 });
 
-// Anon client for public-facing operations
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Anon client
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  realtime: {
+    params: { eventsPerSecond: -1 },
+  },
+});
 
 export default supabaseAdmin;
