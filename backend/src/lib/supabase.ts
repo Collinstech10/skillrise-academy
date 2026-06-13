@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import ws from 'ws';
 dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL!;
@@ -17,7 +18,7 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
     persistSession: false,
   },
   realtime: {
-    // Disable realtime to avoid WebSocket issues on Node 18/20
+    transport: ws,
     params: { eventsPerSecond: -1 },
   },
   global: {
@@ -28,6 +29,7 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 // Anon client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   realtime: {
+    transport: ws,
     params: { eventsPerSecond: -1 },
   },
 });
