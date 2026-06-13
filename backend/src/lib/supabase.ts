@@ -1,21 +1,34 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY!;
+// Validate environment variables early
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase environment variables');
+if (!supabaseUrl) {
+  throw new Error('Missing SUPABASE_URL');
 }
 
-// Service role client — bypasses RLS, use only server-side
+if (!supabaseServiceKey) {
+  throw new Error('Missing SUPABASE_SERVICE_ROLE_KEY');
+}
+
+if (!supabaseAnonKey) {
+  throw new Error('Missing SUPABASE_ANON_KEY');
+}
+
+// 🔐 Server-only admin client (bypasses RLS)
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { autoRefreshToken: false, persistSession: false },
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+  },
 });
 
-// Anon client for public-facing operations
+// 🌐 Public client (frontend-safe)
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export default supabaseAdmin;
