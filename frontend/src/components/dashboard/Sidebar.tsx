@@ -1,13 +1,14 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, BookOpen, ShoppingBag, Users, Wallet, User, LogOut, GraduationCap, X, Trophy } from 'lucide-react';
+import { LayoutDashboard, BookOpen, ShoppingBag, Users, Wallet, User, LogOut, GraduationCap, X, Trophy, Radio } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 import { getInitials, cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/dashboard/courses', icon: BookOpen, label: 'Courses' },
+  { href: '/dashboard/live-classes', icon: Radio, label: 'Live Classes' },
   { href: '/dashboard/my-courses', icon: ShoppingBag, label: 'My Courses' },
   { href: '/dashboard/referrals', icon: Users, label: 'Referrals' },
   { href: '/dashboard/leaderboard', icon: Trophy, label: 'Leaderboard' },

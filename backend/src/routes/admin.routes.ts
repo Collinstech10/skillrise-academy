@@ -8,6 +8,9 @@ import {
   createAnnouncement, getAnnouncements,
 } from '../controllers/admin.controller';
 import { authMiddleware, adminMiddleware } from '../middleware/auth';
+import {
+  adminGetAllLiveClasses, createLiveClass, updateLiveClass, deleteLiveClass,
+} from '../controllers/liveclasses.controller';
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -51,5 +54,11 @@ router.get('/referrals', getReferrals);
 // Announcements
 router.get('/announcements', getAnnouncements);
 router.post('/announcements', createAnnouncement);
+
+// Live Classes
+router.get('/live-classes', adminGetAllLiveClasses);
+router.post('/live-classes', createLiveClass);
+router.put('/live-classes/:id', updateLiveClass);
+router.delete('/live-classes/:id', deleteLiveClass);
 
 export default router;

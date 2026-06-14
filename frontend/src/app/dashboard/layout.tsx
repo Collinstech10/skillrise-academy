@@ -1,7 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, Bell, Moon, Sun } from 'lucide-react';
+import { Menu, Moon, Sun } from 'lucide-react';
+import NotificationBell from '@/components/dashboard/NotificationBell';
 import { useAuthStore } from '@/lib/store';
 import Sidebar from '@/components/dashboard/Sidebar';
 
@@ -51,10 +52,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <button onClick={toggleDark} className="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
-            <button className="relative p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
-            </button>
+            <NotificationBell />
           </div>
         </header>
 

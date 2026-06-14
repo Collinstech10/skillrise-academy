@@ -12,6 +12,8 @@ import userRoutes from './routes/users.routes';
 import courseRoutes from './routes/courses.routes';
 import paymentRoutes from './routes/payments.routes';
 import adminRoutes from './routes/admin.routes';
+import liveClassesRoutes from './routes/liveclasses.routes';
+import { checkAndSendLiveClassNotifications } from './controllers/liveclasses.controller';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -91,6 +93,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/live-classes', liveClassesRoutes);
 
 // ── 404 handler ───────────────────────────────────────────────────────────
 app.use((req, res) => {
@@ -108,6 +111,14 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
     message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error',
   });
 });
+
+// ── Live Class Notification Scheduler ────────────────────────────────────
+// Checks every minute for upcoming live classes that need notifications
+setInterval(() => {
+  checkAndSendLiveClassNotifications().catch(err =>
+    console.error('Live class notification check failed:', err)
+  );
+}, 60 * 1000); // every 60 seconds
 
 // ── Start server ──────────────────────────────────────────────────────────
 app.listen(PORT, () => {
