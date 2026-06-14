@@ -104,3 +104,17 @@ export interface AuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
 }
+
+export interface LiveClass {
+  id: string;
+  title: string;
+  description?: string;
+  instructor: string;
+  thumbnail?: string;
+  youtube_url: string;
+  youtube_id: string | null;
+  start_time: string;
+  status: 'upcoming' | 'live' | 'ended';
+  created_at: string;
+  updated_at?: string;
+}

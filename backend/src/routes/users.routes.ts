@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { getDashboard, getReferrals, updateProfile, uploadAvatar, getLeaderboard } from '../controllers/users.controller';
+import { getDashboard, getReferrals, updateProfile, uploadAvatar, getLeaderboard, getNotifications, markNotificationRead, markAllNotificationsRead } from '../controllers/users.controller';
 import { authMiddleware, activeUserMiddleware } from '../middleware/auth';
 
 const upload = multer({
@@ -18,6 +18,9 @@ router.use(authMiddleware);
 router.get('/dashboard', activeUserMiddleware, getDashboard);
 router.get('/referrals', activeUserMiddleware, getReferrals);
 router.get('/leaderboard', activeUserMiddleware, getLeaderboard);
+router.get('/notifications', getNotifications);
+router.put('/notifications/:id/read', markNotificationRead);
+router.put('/notifications/read-all', markAllNotificationsRead);
 router.put('/profile', updateProfile);
 router.post('/avatar', upload.single('avatar'), uploadAvatar);
 
