@@ -186,3 +186,47 @@ export async function getLeaderboard(req: AuthRequest, res: Response) {
     return res.status(500).json({ success: false, message: 'Server error' });
   }
 }
+
+export async function getNotifications(req: AuthRequest, res: Response) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('notifications')
+      .select('id, message, type, is_read, created_at')
+      .eq('user_id', req.user!.id)
+      .order('created_at', { ascending: false })
+      .limit(30);
+
+    if (error) throw error;
+    return res.json({ success: true, data: data ?? [] });
+  } catch (err) {
+    console.error('getNotifications error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
+
+export async function markNotificationRead(req: AuthRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    await supabaseAdmin
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('id', id)
+      .eq('user_id', req.user!.id);
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
+
+export async function markAllNotificationsRead(req: AuthRequest, res: Response) {
+  try {
+    await supabaseAdmin
+      .from('notifications')
+      .update({ is_read: true })
+      .eq('user_id', req.user!.id)
+      .eq('is_read', false);
+    return res.json({ success: true });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Server error' });
+  }
+}

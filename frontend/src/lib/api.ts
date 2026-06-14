@@ -46,6 +46,10 @@ export const userApi = {
   }),
   getDashboard: () => api.get('/users/dashboard'),
   getReferrals: () => api.get('/users/referrals'),
+  getLeaderboard: () => api.get('/users/leaderboard'),
+  getNotifications: () => api.get('/users/notifications'),
+  markNotificationRead: (id: string) => api.put(`/users/notifications/${id}/read`),
+  markAllNotificationsRead: () => api.put('/users/notifications/read-all'),
 };
 
 // Courses
@@ -55,6 +59,13 @@ export const courseApi = {
   purchase: (courseId: string, paymentRef: string) =>
     api.post('/courses/purchase', { courseId, paymentRef }),
   getMyCourses: () => api.get('/courses/my-courses'),
+};
+
+
+// Live Classes
+export const liveClassApi = {
+  getAll: () => api.get('/live-classes'),
+  getById: (id: string) => api.get(`/live-classes/${id}`),
 };
 
 // Payments
@@ -82,6 +93,10 @@ export const adminApi = {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
   deleteCourse: (id: string) => api.delete(`/admin/courses/${id}`),
+  getLiveClasses: () => api.get('/admin/live-classes'),
+  createLiveClass: (data: Record<string, unknown>) => api.post('/admin/live-classes', data),
+  updateLiveClass: (id: string, data: Record<string, unknown>) => api.put(`/admin/live-classes/${id}`, data),
+  deleteLiveClass: (id: string) => api.delete(`/admin/live-classes/${id}`),
   createCourseJson: (data: Record<string, unknown>) => api.post('/admin/courses/json', data),
   updateCourseJson: (id: string, data: Record<string, unknown>) => api.put(`/admin/courses/${id}/json`, data),
   getPayments: () => api.get('/admin/payments'),

@@ -4,7 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import {
   LayoutDashboard, Users, BookOpen, CreditCard, Share2,
-  Megaphone, Menu, X, LogOut, GraduationCap, Moon, Sun, Bell, ChevronRight
+  Megaphone, Menu, X, LogOut, GraduationCap, Moon, Sun, Bell, ChevronRight, Radio
 } from 'lucide-react';
 import { useAuthStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
@@ -13,6 +13,7 @@ const NAV = [
   { href: '/admin', icon: LayoutDashboard, label: 'Overview' },
   { href: '/admin/users', icon: Users, label: 'Users' },
   { href: '/admin/courses', icon: BookOpen, label: 'Courses' },
+  { href: '/admin/live-classes', icon: Radio, label: 'Live Classes' },
   { href: '/admin/payments', icon: CreditCard, label: 'Payments' },
   { href: '/admin/referrals', icon: Share2, label: 'Referrals' },
   { href: '/admin/announcements', icon: Megaphone, label: 'Announcements' },

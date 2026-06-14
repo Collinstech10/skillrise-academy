@@ -371,3 +371,32 @@ INSERT INTO coupons (code, discount_type, discount_value, max_uses, expires_at) 
 ('FLAT2000', 'fixed', 2000, 50, NOW() + INTERVAL '30 days'),
 ('SKILLRISE', 'percentage', 20, 500, NOW() + INTERVAL '90 days')
 ON CONFLICT (code) DO NOTHING;
+
+-- ══════════════════════════════════════════════════════════════════════════
+-- LIVE CLASSES
+-- ══════════════════════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS live_classes (
+  id           UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title        TEXT NOT NULL,
+  description  TEXT,
+  instructor   TEXT NOT NULL,
+  thumbnail    TEXT,
+  youtube_url  TEXT NOT NULL,
+  start_time   TIMESTAMPTZ NOT NULL,
+  status       TEXT DEFAULT 'upcoming' CHECK (status IN ('upcoming','live','ended')),
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_live_classes_start_time ON live_classes(start_time);
+CREATE INDEX IF NOT EXISTS idx_live_classes_status     ON live_classes(status);
+
+CREATE TRIGGER trg_live_classes_updated_at
+  BEFORE UPDATE ON live_classes
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+ALTER TABLE live_classes DISABLE ROW LEVEL SECURITY;
+
+-- Sample live class
+INSERT INTO live_classes (title, description, instructor, youtube_url, start_time, status) VALUES
+('Web Development Live Class', 'Join us for a live deep-dive into modern web development techniques, Q&A, and live coding.', 'Collins', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', NOW() + INTERVAL '2 days', 'upcoming');
